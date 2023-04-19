@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-range_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/range_doppler_umbc_cfar_data.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
@@ -50,9 +50,9 @@ BATCH_SIZE = 70
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
-history = model.fit(train_dataset, epochs=60, validation_data=validation_dataset)
+history = model.fit(train_dataset, epochs=40, validation_data=validation_dataset)
 
-# model.save(f"saved-model/range-doppler-model")
+model.save(f"saved-model/range-doppler-model-umbc")
 
 predicted_labels = model.predict(x_test)
 actual_labels = y_test

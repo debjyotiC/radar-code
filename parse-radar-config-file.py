@@ -1,11 +1,12 @@
-import numpy as np
+conf_file_path = "config_files/xwr16xx_UMBC.cfg"
 
 
-def parseConfigFile(configFileName):
-    global chirpEndIdx, chirpStartIdx, numLoops, numAdcSamplesRoundTo2, digOutSampleRate, numAdcSamples, freqSlopeConst, startFreq, idleTime, rampEndTime, numTxAnt
-    configParameters = {}  # Initialize an empty dictionary to store the configuration parameters
-
+def parseConfigFile(configFileName, Rx_Ant, Tx_Ant):
     # Read the configuration file and send it to the board
+    global chirpEndIdx, chirpStartIdx, numLoops, numTxAnt, numAdcSamplesRoundTo2, \
+        digOutSampleRate, numAdcSamples, freqSlopeConst, startFreq, idleTime, rampEndTime
+    configParameters = {}
+
     config = [line.rstrip('\r\n') for line in open(configFileName)]
     for i in config:
 
@@ -13,8 +14,8 @@ def parseConfigFile(configFileName):
         splitWords = i.split(" ")
 
         # Hard code the number of antennas, change if other configuration is used
-        numRxAnt = 4
-        numTxAnt = 4
+        numRxAnt = Rx_Ant
+        numTxAnt = Tx_Ant
 
         # Get the information about the profile configuration
         if "profileCfg" in splitWords[0]:
@@ -32,7 +33,6 @@ def parseConfigFile(configFileName):
 
         # Get the information about the frame configuration
         elif "frameCfg" in splitWords[0]:
-
             chirpStartIdx = int(splitWords[1])
             chirpEndIdx = int(splitWords[2])
             numLoops = int(splitWords[3])
@@ -44,18 +44,17 @@ def parseConfigFile(configFileName):
     configParameters["numDopplerBins"] = numChirpsPerFrame / numTxAnt
     configParameters["numRangeBins"] = numAdcSamplesRoundTo2
     configParameters["rangeResolutionMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * numAdcSamples)
+            2 * freqSlopeConst * 1e12 * numAdcSamples)
     configParameters["rangeIdxToMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
+            2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
     configParameters["dopplerResolutionMps"] = 3e8 / (
-                2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
+            2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
     configParameters["maxRange"] = (300 * 0.9 * digOutSampleRate) / (2 * freqSlopeConst * 1e3)
     configParameters["maxVelocity"] = 3e8 / (4 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * numTxAnt)
 
     return configParameters
 
 
-d = parseConfigFile("AWR294X_profile_2023_03_24T13_43_52_777.cfg")
-
+d = parseConfigFile(conf_file_path, Rx_Ant=4, Tx_Ant=4)
 
 print(d)
