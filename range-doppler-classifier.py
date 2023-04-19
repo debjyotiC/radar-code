@@ -46,13 +46,13 @@ model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 70
+BATCH_SIZE = 75
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
 history = model.fit(train_dataset, epochs=40, validation_data=validation_dataset)
 
-model.save(f"saved-model/range-doppler-model-umbc")
+# model.save(f"saved-model/range-doppler-model-umbc")
 
 predicted_labels = model.predict(x_test)
 actual_labels = y_test

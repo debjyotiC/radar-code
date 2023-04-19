@@ -41,7 +41,7 @@ def parseConfigFile(configFileName, Rx_Ant, Tx_Ant):
 
     # Combine the read data to obtain the configuration parameters
     numChirpsPerFrame = (chirpEndIdx - chirpStartIdx + 1) * numLoops
-    configParameters["numDopplerBins"] = numChirpsPerFrame / numTxAnt
+    configParameters["numDopplerBins"] = int(numChirpsPerFrame / numTxAnt)
     configParameters["numRangeBins"] = numAdcSamplesRoundTo2
     configParameters["rangeResolutionMeters"] = (3e8 * digOutSampleRate * 1e3) / (
             2 * freqSlopeConst * 1e12 * numAdcSamples)
@@ -55,6 +55,6 @@ def parseConfigFile(configFileName, Rx_Ant, Tx_Ant):
     return configParameters
 
 
-d = parseConfigFile(conf_file_path, Rx_Ant=4, Tx_Ant=4)
+d = parseConfigFile(conf_file_path, Rx_Ant=4, Tx_Ant=2)
 
 print(d)

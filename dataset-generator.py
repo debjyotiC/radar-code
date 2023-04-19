@@ -8,11 +8,11 @@ dataset_path = 'data/csv_files/new_umbc/'
 # Config parameters for test
 # configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
 #                     'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
-#                     'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585} # AWR_Deb
+#                     'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585} # AWR2944X_Deb
 
 configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-                    'maxVelocity': 0.5009390938212168}
+                    'maxVelocity': 0.5009390938212168}  # xwr16xx_umbc
 
 all_targets = [name for name in listdir(dataset_path) if isdir(join(dataset_path, name))]
 # all_targets.remove('.DS_Store')
@@ -29,7 +29,7 @@ for index, target in enumerate(all_targets):
 
 def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
     num_rows, num_cols = signal.shape
-    thresholded_signal = np.zeros((num_rows, num_cols))
+    threshold_signal = np.zeros((num_rows, num_cols))
     for i in range(guard_band_width, num_rows - guard_band_width):
         for j in range(guard_band_width, num_cols - guard_band_width):
             # Estimate the noise level
@@ -40,8 +40,8 @@ def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
             threshold = threshold_factor * noise_level
             # Check if the signal exceeds the threshold
             if signal[i, j] > threshold:
-                thresholded_signal[i, j] = 1
-    return thresholded_signal
+                threshold_signal[i, j] = 1
+    return threshold_signal
 
 
 def calc_range_doppler(data_frame, packet_id, config):
