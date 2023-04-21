@@ -3,8 +3,9 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+np.seterr(divide='ignore')
 # TO DO: Add your own config file
-configFileName = 'AWR294X_profile_2023_03_24T13_43_52_777.cfg'
+configFileName = 'config_files/AWR294X_Deb.cfg'
 CLIport = {}
 Dataport = {}
 byteBuffer = np.zeros(2 ** 15, dtype='uint8')
@@ -35,9 +36,9 @@ def print_generator(range_arr, doppler_array, range_doppler):
     kernel_size = 3
     threshold_factor = 1.0
     detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
-    print(detected_objects)
+    # print(detected_objects)
     plt.clf()
-    cs = plt.contourf(detected_objects)
+    cs = plt.contourf(range_arr[:128], doppler_array, range_doppler[:, :128])
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
     plt.pause(0.1)
@@ -113,11 +114,11 @@ def parseConfigFile(configFileName):
     configParameters["numDopplerBins"] = numChirpsPerFrame / numTxAnt
     configParameters["numRangeBins"] = numAdcSamplesRoundTo2
     configParameters["rangeResolutionMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * numAdcSamples)
+            2 * freqSlopeConst * 1e12 * numAdcSamples)
     configParameters["rangeIdxToMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
+            2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
     configParameters["dopplerResolutionMps"] = 3e8 / (
-                2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
+            2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
     configParameters["maxRange"] = (300 * 0.9 * digOutSampleRate) / (2 * freqSlopeConst * 1e3)
     configParameters["maxVelocity"] = 3e8 / (4 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * numTxAnt)
 
@@ -273,7 +274,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 # Make the necessary corrections and calculate the rest of the data
                 rangeVal = rangeIdx * configParameters["rangeIdxToMeters"]
                 dopplerIdx[dopplerIdx > (configParameters["numDopplerBins"] / 2 - 1)] = dopplerIdx[dopplerIdx > (
-                            configParameters["numDopplerBins"] / 2 - 1)] - 65535
+                        configParameters["numDopplerBins"] / 2 - 1)] - 65535
                 dopplerVal = dopplerIdx * configParameters["dopplerResolutionMps"]
                 # x[x > 32767] = x[x > 32767] - 65536
                 # y[y > 32767] = y[y > 32767] - 65536
@@ -303,7 +304,8 @@ def readAndParseData16xx(Dataport, configParameters):
                     continue
 
                 # Convert the range doppler array to a matrix
-                rangeDoppler = np.reshape(rangeDoppler, (int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
+                rangeDoppler = np.reshape(rangeDoppler, (
+                int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
                                           'F')  # Fortran-like reshape
                 rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):],
                                          rangeDoppler[:int(len(rangeDoppler) / 2)], axis=0)
@@ -314,7 +316,7 @@ def readAndParseData16xx(Dataport, configParameters):
                     np.arange(-configParameters["numDopplerBins"] / 2, configParameters["numDopplerBins"] / 2),
                     configParameters["dopplerResolutionMps"])
 
-                print_generator(rangeArray, dopplerArray, rangeDoppler)
+                print_generator(rangeArray, dopplerArray, 20 * np.log10(rangeDoppler))
 
         # Remove already processed data
         if 0 < idX < byteBufferLength:
@@ -362,8 +364,3 @@ while True:
         CLIport.close()
         Dataport.close()
         break
-
-
-
-
-

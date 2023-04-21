@@ -5,10 +5,10 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 # TO DO: Add your own config file and model path
-configFileName = 'AWR294X_profile_2023_03_24T13_43_52_777.cfg'
-model_path = f"saved-tflite-model/range-doppler-float16.tflite"
+configFileName = 'config_files/AWR294X_Deb.cfg'
+model_path = "saved-tflite-model/range-doppler-float16.tflite"
 
-debug = False  # prints Range-Doppler data when enabled
+debug = True  # prints Range-Doppler data when enabled
 
 CLIport = {}
 Dataport = {}
@@ -59,7 +59,7 @@ def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
 
     if debug:
         plt.clf()
-        cs = plt.contourf(range_arr[:128], doppler_array, range_doppler_cfar[:, :128])
+        cs = plt.contourf(range_arr[:128], doppler_array, range_doppler[:, :128])
         fig.colorbar(cs, shrink=0.9)
         fig.canvas.draw()
         plt.pause(0.1)
@@ -327,7 +327,7 @@ def readAndParseData16xx(Dataport, configParameters):
                                           'F')  # Fortran-like reshape
                 rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):],
                                          rangeDoppler[:int(len(rangeDoppler) / 2)], axis=0)
-
+                rangeDoppler = 20 * np.log10(rangeDoppler)
                 # Generate the range and doppler arrays for the plot
                 rangeArray = np.array(range(configParameters["numRangeBins"])) * configParameters["rangeIdxToMeters"]
                 dopplerArray = np.multiply(
