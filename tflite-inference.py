@@ -5,7 +5,7 @@ import time
 type_of_quantization = "float16"
 model_path = f"saved-tflite-model/range-doppler-home-{type_of_quantization}.tflite"
 
-range_doppler_features = np.load("data/npz_files/range_doppler_home_cfar_data.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/range_doppler_home_cfar_data_test.npz", allow_pickle=True)
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
 interpreter = tf.lite.Interpreter(model_path=model_path)
@@ -18,7 +18,7 @@ input_index = input_details["index"]
 classes_values = ["occupied_room", "empty_room"]
 
 print(f"Model type {type_of_quantization}")
-# bad testing on training data
+
 for i, true_label in enumerate(y_data):
     data = x_data[i]
 
@@ -33,4 +33,4 @@ for i, true_label in enumerate(y_data):
 
     pred = np.argmax(classes)
     print(f"Inference time: {elapsed_time} ms")
-    print(classes_values[pred], classes_values[true_label-1])
+    print("Pred. class label ", classes_values[pred], "for true label ", classes_values[true_label-1])

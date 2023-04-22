@@ -5,7 +5,7 @@ from os.path import isdir, join
 
 # dataset_path = 'data/csv_files/indoor/new_umbc/' # indoor data
 
-dataset_path = 'data/csv_files/home_new'  # outdoor data
+dataset_path = 'data/csv_files/home_test'  # outdoor data
 
 # Config parameters for test
 configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
@@ -87,5 +87,5 @@ data_range_x = np.array(out_x_range_doppler)
 data_range_cfar_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
-np.savez('data/npz_files/range_doppler_home_data.npz', out_x=data_range_x, out_y=data_range_y)
-np.savez('data/npz_files/range_doppler_home_cfar_data.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_home_data_test.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_home_cfar_data_test.npz', out_x=data_range_cfar_x, out_y=data_range_y)

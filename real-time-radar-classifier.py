@@ -36,9 +36,9 @@ def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
 
 def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
     # 2D CFAR parameters
-    guard_band_width = 1
+    guard_band_width = 3
     kernel_size = 3
-    threshold_factor = 1.0
+    threshold_factor = 1
     range_doppler_cfar = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)[:, :128]
 
     interpreter = tf.lite.Interpreter(model_path=tflite_model)
