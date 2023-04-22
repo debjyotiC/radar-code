@@ -5,7 +5,8 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-range_doppler_features = np.load("data/npz_files/range_doppler_umbc_cfar_data.npz", allow_pickle=True)
+
+range_doppler_features = np.load(f"data/npz_files/range_doppler_home_cfar_data.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
@@ -14,20 +15,22 @@ classes = len(classes_values)
 
 y_data = tf.keras.utils.to_categorical(y_data - 1, classes)
 
-train_ratio = 0.80
-validation_ratio = 0.10
+train_ratio = 0.70
+validation_ratio = 0.20
 test_ratio = 0.10
 
 x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=1 - train_ratio)
 x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=test_ratio/(test_ratio + validation_ratio))
 x_train = tf.expand_dims(x_train, axis=-1)
 
+
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 validation_dataset = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=x_train.shape[1:]),
+    tf.keras.layers.Reshape((16, 128, 1), input_shape=x_train.shape[1:]),
+    tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
     tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
@@ -46,13 +49,13 @@ model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 75
+BATCH_SIZE = 80
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
 history = model.fit(train_dataset, epochs=40, validation_data=validation_dataset)
 
-# model.save(f"saved-model/range-doppler-model-umbc")
+model.save(f"saved-model/range-doppler-model-home")
 
 predicted_labels = model.predict(x_test)
 actual_labels = y_test

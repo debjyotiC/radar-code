@@ -1,4 +1,4 @@
-conf_file_path = "config_files/xwr16xx_UMBC.cfg"
+conf_file_path = "config_files/xwr16xx_UMBC_outdoor.cfg"
 
 
 def parseConfigFile(configFileName, Rx_Ant, Tx_Ant):
