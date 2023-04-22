@@ -72,7 +72,7 @@ def serialConfig(configFileName):
     global Dataport
     # Open the serial ports for the configuration and the data ports
 
-    # Raspberry pi / Ubuntu
+    # Raspberry pi / Ubuntu add ports to dial out user group sudo usermod -a -G dialout $USER
     # CLIport = serial.Serial('/dev/ttyACM0', 115200)
     # Dataport = serial.Serial('/dev/ttyACM1', 852272)
 
