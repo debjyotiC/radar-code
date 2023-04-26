@@ -14,6 +14,9 @@ configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionM
 
 # configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
 #                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
+#                     'maxVelocity': 0.5009390938212168}  # xwr16xx_umbc
+# configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
+#                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
 #                     'maxVelocity': 0.5009390938212168} # xwr16xx_umbc_indoor
 
 # configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
