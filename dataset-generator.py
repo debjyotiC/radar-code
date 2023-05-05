@@ -3,7 +3,7 @@ import numpy as np
 from os import listdir
 from os.path import isdir, join
 
-dataset_path = 'data/csv_files/new_umbc/'
+dataset_path = 'data/csv_files/home_new'
 
 # Config parameters for test
 configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
