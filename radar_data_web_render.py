@@ -1,19 +1,19 @@
 from flask import Flask, render_template
-import pymongo
+import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-db_connect = myclient["radar_db"]  # database name
-db_collection = db_connect["radar_data"]  # collection name
 
 
 @app.route("/")
 def index():
-    data = {"Prediction": {"$exists": True}}
+    conn = sqlite3.connect('radar_database.db')
+    c = conn.cursor()
 
-    reply_got = [i for i in db_collection.find(data)][-1]
-    reply = {'Prediction': reply_got['Prediction'], 'Time': reply_got['Time']}
+    c.execute("SELECT * FROM radar_data WHERE key_1=? AND key_2=?", ("Prediction", "Time"))
+    result = c.fetchall()[-1]
+
+    reply = {'Prediction': result[1], 'Time': result[3]}
 
     return render_template("index.html", results=reply)
 

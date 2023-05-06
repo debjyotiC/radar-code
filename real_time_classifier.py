@@ -4,14 +4,11 @@ import numpy as np
 import tensorflow as tf
 from datetime import datetime
 import pymongo
+import sqlite3
 
 # TO DO: Add your own config file and model path
 configFileName = 'config_files/AWR294X_Deb.cfg'
 model_path = "saved-tflite-model/range-doppler-float16.tflite"
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-db_connect = myclient["radar_db"]  # database name
-db_collection = db_connect["radar_data"]  # collection name
 
 CLIport = {}
 Dataport = {}
@@ -59,8 +56,13 @@ def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
     pred = np.argmax(classes)
 
     db = {'Prediction': classes_values[pred], 'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    with sqlite3.connect('radar_database.db') as conn:
+        c = conn.cursor()
+    c.execute("INSERT INTO radar_data VALUES (?, ?, ?, ?)", ("Prediction", f"{db['Prediction']}", "Time", f"{db['Time']}")).fetchall()
+    conn.commit()
+    conn.close()
 
-    db_collection.insert_one(db)
+    print(db)
 
 
 # Function to configure the serial ports and send the data from
