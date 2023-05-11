@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 moving = 1
 no_moving = 2
 
-frange_doppler_features = np.load("data/npz_files/range_doppler_home_cfar_data_test.npz", allow_pickle=True)
+frange_doppler_features = np.load("data/npz_files/range_doppler_home_data_test.npz", allow_pickle=True)
 
 x_data, y_data = frange_doppler_features['out_x'], frange_doppler_features['out_y']
 # Config parameters for test

@@ -52,8 +52,8 @@ def classify_data(data):
 @app.route("/")
 def index():
     # get results
-    results = real_time_classifier.range_doppler_arr
-    prediction = classify_data(results)
+    doppler_data = real_time_classifier.range_doppler_arr
+    prediction = classify_data(doppler_data)
     classes_values = ["occupied_room", "empty_room"]
 
     # render the HTML template with results
