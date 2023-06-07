@@ -2,3 +2,7 @@
 /.idea
 
 /classification-vital-sign.py
+
+/your_database.db
+/range-azimuth-heat-map.py
+/data/

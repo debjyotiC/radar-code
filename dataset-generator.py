@@ -1,25 +1,19 @@
 import pandas as pd
 import numpy as np
+import pywt
 from os import listdir
 from os.path import isdir, join
 
-dataset_path = 'data/csv_files/home_new'
+dataset_path = 'data/csv_files/umbc_new'
 
 # Config parameters for test
-configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
-                    'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
-                    'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585} # AWR2944X_Deb
+# configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
+#                     'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
+#                     'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585}  # AWR2944X_Deb
 
-# configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
-#                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-#                     'maxVelocity': 0.5009390938212168}  # xwr16xx_umbc
-# configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
-#                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-#                     'maxVelocity': 0.5009390938212168}  # xwr16xx_umbc_indoor
-
-# configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
-#                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-#                     'maxVelocity': 1.0018781876424336}  # xwr16xx_umbc_outdoor
+configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
+                    'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
+                    'maxVelocity': 1.0018781876424336}
 
 all_targets = [name for name in listdir(dataset_path) if isdir(join(dataset_path, name))]
 # all_targets.remove('.DS_Store')
@@ -51,6 +45,20 @@ def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
     return threshold_signal
 
 
+def wavelet_denoising(data, wavelet='db4', value=0.5):
+    # Perform the wavelet transform.
+    coefficients = pywt.wavedec2(data, wavelet)
+
+    # Threshold the coefficients.
+    threshold = pywt.threshold(coefficients[0], value=value)
+    coefficients[0] = pywt.threshold(coefficients[0], threshold)
+
+    # Inverse wavelet transform.
+    denoised_data = pywt.waverec2(coefficients, wavelet)
+
+    return denoised_data
+
+
 def calc_range_doppler(data_frame, packet_id, config):
     payload = data_frame[packet_id].to_numpy()
     # Convert levels to dBm
@@ -65,6 +73,7 @@ def calc_range_doppler(data_frame, packet_id, config):
 
 out_x_range_doppler = []
 out_x_range_doppler_cfar = []
+out_x_range_doppler_wavelet = []
 out_y_range_doppler = []
 
 for folder in range(len(all_targets)):
@@ -79,14 +88,18 @@ for folder in range(len(all_targets)):
         for col in df_data.columns:
             data = calc_range_doppler(df_data, col, configParameters)
             cfar_data = apply_2d_cfar(data, guard_band_width=3, kernel_size=3, threshold_factor=1)
+            wavelet_data = wavelet_denoising(cfar_data, wavelet='db4', value=1.5)
 
             out_x_range_doppler.append(data)
             out_x_range_doppler_cfar.append(cfar_data)
+            out_x_range_doppler_wavelet.append(cfar_data)
             out_y_range_doppler.append(folder + 1)
 
 data_range_x = np.array(out_x_range_doppler)
 data_range_cfar_x = np.array(out_x_range_doppler_cfar)
+data_range_wavelet_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
-np.savez('data/npz_files/range_doppler_home_data_test.npz', out_x=data_range_x, out_y=data_range_y)
-np.savez('data/npz_files/range_doppler_home_cfar_data_test.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_data_test.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_cfar_data_test.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_wavelet_data_test.npz', out_x=data_range_wavelet_x, out_y=data_range_y)

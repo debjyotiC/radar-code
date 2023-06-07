@@ -1,8 +1,8 @@
-matplotlib==3.7.1
-numpy==1.23.5
-pandas==1.5.3
-pip==23.0.1
-pyserial==3.5
-scikit-learn==1.2.2
-seaborn==0.12.2
-tensorflow==2.12.0
+matplotlib
+numpy
+pandas
+pyserial
+scikit-learn
+seaborn
+tensorflow
+pillow

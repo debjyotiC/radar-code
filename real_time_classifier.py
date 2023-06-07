@@ -3,7 +3,6 @@ import time
 import numpy as np
 import tensorflow as tf
 from datetime import datetime
-import pymongo
 import sqlite3
 
 # TO DO: Add your own config file and model path
@@ -34,7 +33,7 @@ def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
     return thresholded_signal
 
 
-def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
+def classifier_func(range_doppler, tflite_model):
     # 2D CFAR parameters
     guard_band_width = 3
     kernel_size = 3
@@ -334,7 +333,7 @@ def readAndParseData16xx(Dataport, configParameters):
                     np.arange(-configParameters["numDopplerBins"] / 2, configParameters["numDopplerBins"] / 2),
                     configParameters["dopplerResolutionMps"])
 
-                print_generator(rangeArray, dopplerArray, rangeDoppler, model_path)
+                classifier_func(rangeDoppler, model_path)
 
         # Remove already processed data
         if 0 < idX < byteBufferLength:
