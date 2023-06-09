@@ -5,17 +5,17 @@ import matplotlib.pyplot as plt
 moving = 1
 no_moving = 2
 
-frange_doppler_features = np.load("data/npz_files/range_doppler_home_data.npz", allow_pickle=True)
+frange_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_2_data.npz", allow_pickle=True)
 
 x_data, y_data = frange_doppler_features['out_x'], frange_doppler_features['out_y']
 # Config parameters for test
-configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
-                    'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
-                    'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585}  # AWR2944X_Deb
+# configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
+#                     'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
+#                     'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585}  # AWR2944X_Deb
 
-# configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
-#                     'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-#                     'maxVelocity': 1.0018781876424336}
+configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
+                    'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
+                    'maxVelocity': 1.0018781876424336}
 
 # Generate the range and doppler arrays for the plot
 rangeArray = np.array(range(configParameters["numRangeBins"])) * configParameters["rangeIdxToMeters"]
@@ -24,7 +24,7 @@ dopplerArray = np.multiply(np.arange(-configParameters["numDopplerBins"] / 2, co
 
 fig = plt.figure()
 
-test = moving  # change this for testing
+test = no_moving  # change this for testing
 
 
 def wavelet_denoising(data, wavelet, value):
@@ -67,8 +67,8 @@ for count, frame in enumerate(x_data[np.where(y_data == test)]):
     else:
         plt.title(f"Frame {count} for moving target")
 
-    frame = wavelet_denoising(frame,  wavelet='haar', value=2.0)
-    frame = apply_2d_cfar(frame, guard_band_width=5, kernel_size=5, threshold_factor=2.2)
+    # frame = wavelet_denoising(frame,  wavelet='haar', value=2.0)
+    # frame = apply_2d_cfar(frame, guard_band_width=5, kernel_size=5, threshold_factor=2.2)
     cs = plt.contourf(rangeArray, dopplerArray, frame)
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
