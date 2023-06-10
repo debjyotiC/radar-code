@@ -68,7 +68,7 @@ def compute_cam(tflite_interpreter, mat, layer_name, index_input, index_output):
 def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
     # 2D CFAR parameters
     guard_band_width = 3
-    kernel_size = 3
+    kernel_size = 5
     threshold_factor = 1
     range_doppler_cfar = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)[:, :128]
 
@@ -79,70 +79,17 @@ def print_generator(range_arr, doppler_array, range_doppler, tflite_model):
     output_details = interpreter.get_output_details()[0]
 
     input_index = input_details["index"]
-    output_index = output_details['index']
-
     classes_values = ["occupied_room", "empty_room"]
     in_tensor = np.float32(range_doppler_cfar.reshape(1, range_doppler_cfar.shape[0], range_doppler_cfar.shape[1], 1))
-    # interpreter.set_tensor(input_index, in_tensor)
-    # interpreter.invoke()
+    interpreter.set_tensor(input_index, in_tensor)
+    interpreter.invoke()
 
-    cam_mat = compute_cam(interpreter, in_tensor, 'conv2d_2', input_index, output_index)
     classes = interpreter.get_tensor(output_details['index'])[0]
     pred = np.argmax(classes)
-    # conf_score = np.round(pred[0], 4)
 
     db = {'Prediction': classes_values[pred], 'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
-    cam_blob = cam_mat.tobytes()
-    rdv_blob = range_doppler[:, :128].tobytes()
-
-    with sqlite3.connect(f'{script_dir}/radar_database.db') as conn:
-        c = conn.cursor()
-
-    # table creation
-    c.execute('''CREATE TABLE IF NOT EXISTS cam_mat (
-                        id INTEGER PRIMARY KEY,
-                        matrix_values BLOB,
-                        timestamp TEXT
-                    )''')
-
-    # Create the "rdv_mat" table if it doesn't exist
-    c.execute('''CREATE TABLE IF NOT EXISTS rdv_mat (
-                        id INTEGER PRIMARY KEY,
-                        matrix_values BLOB,
-                        timestamp TEXT
-                    )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS radar_data (key_1 text, value_1 text, key_2 text, value_2 text)''')
-
-    c.execute("INSERT INTO cam_mat (matrix_values, timestamp) VALUES (?, ?)", (cam_blob, db['Time']))
-    c.execute("INSERT INTO rdv_mat (matrix_values, timestamp) VALUES (?, ?)", (rdv_blob, db['Time']))
-    c.execute("INSERT INTO radar_data VALUES (?, ?, ?, ?)",
-              ("Prediction", f"{db['Prediction']}", "Time", f"{db['Time']}"))
-    # Commit the changes
-    conn.commit()
-    # conn.close()
-    # print(db)
-
-    if debug:
-        plt.clf()
-        plt.xlabel("Range (m)")
-        plt.ylabel("Doppler velocity (m/s)")
-        cs_1 = plt.contourf(range_arr[:128], doppler_array, range_doppler[:, :128])
-        if not classes:
-            plt.title(f"Frame for {classes_values[classes]} with")
-            cs_2 = plt.contour(range_arr[:128], doppler_array, cam_mat, levels=1, colors='r')
-        else:
-            plt.title(f"Frame for {classes_values[classes]}")
-        fig.colorbar(cs_1, shrink=0.9)
-        legend_labels = [
-            Line2D([0], [0], color='r', linestyle='-')
-        ]
-        legend_text = [f"Red: Moving target"]
-        # Add a legend
-        plt.legend(legend_labels, legend_text)
-        fig.canvas.draw()
-
-        plt.pause(0.2)
+    print(db)
 
 
 # Function to configure the serial ports and send the data from
@@ -384,6 +331,8 @@ def readAndParseData16xx(Dataport, configParameters):
                 # Store the data in the detObj dictionary
                 detObj = {"numObj": tlv_numObj, "rangeIdx": rangeIdx, "range": rangeVal, "dopplerIdx": dopplerIdx,
                           "doppler": dopplerVal, "peakVal": peakVal, "x": x, "y": y, "z": z}
+
+                print(detObj)
 
                 dataOK = 1
 
