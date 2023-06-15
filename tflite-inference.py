@@ -27,10 +27,13 @@ for i, true_label in enumerate(y_data):
     start_time = time.time()
     interpreter.set_tensor(input_index, in_tensor)
     interpreter.invoke()
-    classes = interpreter.get_tensor(output_details['index'])[0]
+    classes = interpreter.get_tensor(output_details['index'])
     end_time = time.time()
     elapsed_time = (end_time - start_time) * 1000.0
-
-    pred = np.argmax(classes)
+    confidence_scores = np.squeeze(classes)
+    max_index = np.argmax(confidence_scores)
+    max_value = confidence_scores[max_index]
+    print(max_value)
+    pred = np.argmax(classes[0])
     print(f"Inference time: {elapsed_time} ms")
     print("Pred. class label ", classes_values[pred], "for true label ", classes_values[true_label-1])

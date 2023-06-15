@@ -98,5 +98,5 @@ data_range_x = np.array(out_x_range_doppler)
 data_range_cfar_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
-np.savez('data/npz_files/range_doppler_umbc_new_2_data.npz', out_x=data_range_x, out_y=data_range_y)
-np.savez('data/npz_files/range_doppler_umbc_new_2_cfar.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_3_data.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_3_cfar.npz', out_x=data_range_cfar_x, out_y=data_range_y)
