@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-range_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_2_cfar.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_3_cfar.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
@@ -55,7 +55,7 @@ validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
 history = model.fit(train_dataset, epochs=40, validation_data=validation_dataset)
 
-model.save(f"saved-model/range-doppler-model-umbc-new-2")
+model.save(f"saved-model/range-doppler-model-umbc-new-3")
 
 predicted_labels = model.predict(x_test)
 actual_labels = y_test
