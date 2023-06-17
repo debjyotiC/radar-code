@@ -73,7 +73,7 @@ def calc_range_doppler(data_frame, packet_id, config):
 
 out_x_range_doppler = []
 out_x_range_doppler_cfar = []
-out_x_range_doppler_wavelet = []
+out_x_range_doppler_cfar_denoised = []
 out_y_range_doppler = []
 
 for folder in range(len(all_targets)):
@@ -87,16 +87,21 @@ for folder in range(len(all_targets)):
 
         for col in df_data.columns:
             data = calc_range_doppler(df_data, col, configParameters)
-            # wavelet_data = wavelet_denoising(data, wavelet='haar', value=2.0)
             cfar_data = apply_2d_cfar(data, guard_band_width=3, kernel_size=5, threshold_factor=1)
+
+            wavelet_data = wavelet_denoising(data, wavelet='haar', value=2.5)
+            denoised_cfar_data = apply_2d_cfar(data, guard_band_width=3, kernel_size=5, threshold_factor=1)
 
             out_x_range_doppler.append(data)
             out_x_range_doppler_cfar.append(cfar_data)
+            out_x_range_doppler_cfar_denoised.append(denoised_cfar_data)
             out_y_range_doppler.append(folder + 1)
 
 data_range_x = np.array(out_x_range_doppler)
 data_range_cfar_x = np.array(out_x_range_doppler_cfar)
+data_range_cfar_denoise_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
 np.savez('data/npz_files/range_doppler_umbc_new_3_data.npz', out_x=data_range_x, out_y=data_range_y)
 np.savez('data/npz_files/range_doppler_umbc_new_3_cfar.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_umbc_new_3_cfar_denoised.npz', out_x=data_range_cfar_denoise_x, out_y=data_range_y)

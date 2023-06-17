@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-range_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_3_cfar.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_3_cfar_denoised.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
@@ -30,20 +30,19 @@ test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
 model = tf.keras.Sequential([
     tf.keras.layers.Reshape((16, 256, 1), input_shape=x_train.shape[1:]),
-    tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
+    tf.keras.layers.Conv2D(32, (2, 2), activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.01)),
     tf.keras.layers.MaxPooling2D(2, 2),
-    tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
+    tf.keras.layers.Conv2D(32, (2, 2), activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.01)),
     tf.keras.layers.MaxPooling2D(2, 2),
-    tf.keras.layers.Conv2D(64, (2, 2), activation='relu'),
+    tf.keras.layers.Conv2D(64, (2, 2), activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.01)),
     tf.keras.layers.MaxPooling2D(2, 2),
-
     tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.01)),
     tf.keras.layers.Dropout(0.25),
     tf.keras.layers.Dense(classes, activation='softmax')
 ])
 
-model.summary()
+# model.summary()
 
 model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
