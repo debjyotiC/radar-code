@@ -4,16 +4,17 @@ import pywt
 from os import listdir
 from os.path import isdir, join
 
-dataset_path = 'data/csv_files/umbc_new'
+dataset_path = 'data/csv_files/indoor/new_umbc'
 
 # Config parameters for test
 # configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
 #                     'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
 #                     'maxRange': 10.045928571428572, 'maxVelocity': 2.003014670613585}  # AWR2944X_Deb
 
+
 configParameters = {'numDopplerBins': 16, 'numRangeBins': 256, 'rangeResolutionMeters': 0.146484375,
-                    'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042, 'maxRange': 33.75,
-                    'maxVelocity': 1.0018781876424336}
+                    'rangeIdxToMeters': 0.146484375, 'dopplerResolutionMps': 0.1252347734553042,
+                    'maxRange': 33.75, 'maxVelocity': 1.0018781876424336}  # umbc_indoor
 
 all_targets = [name for name in listdir(dataset_path) if isdir(join(dataset_path, name))]
 # all_targets.remove('.DS_Store')
@@ -102,6 +103,6 @@ data_range_cfar_x = np.array(out_x_range_doppler_cfar)
 data_range_cfar_denoise_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
-np.savez('data/npz_files/range_doppler_umbc_new_3_data.npz', out_x=data_range_x, out_y=data_range_y)
-np.savez('data/npz_files/range_doppler_umbc_new_3_cfar.npz', out_x=data_range_cfar_x, out_y=data_range_y)
-np.savez('data/npz_files/range_doppler_umbc_new_3_cfar_denoised.npz', out_x=data_range_cfar_denoise_x, out_y=data_range_y)
+np.savez('data/npz_files/umbc_indoor.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/npz_files/umbc_cfar_indoor.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/umbc_indoor_cfar_denoised.npz', out_x=data_range_cfar_denoise_x, out_y=data_range_y)

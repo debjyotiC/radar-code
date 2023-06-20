@@ -3,9 +3,9 @@ import tensorflow as tf
 import time
 
 type_of_quantization = "float16"
-model_path = f"saved-tflite-model/range-doppler-model-umbc-new-3-{type_of_quantization}.tflite"
+model_path = f"saved-tflite-model/umbc_indoor_cfar_denoised_{type_of_quantization}.tflite"
 
-range_doppler_features = np.load("data/npz_files/range_doppler_umbc_new_3_cfar.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/umbc_indoor_cfar_denoised.npz", allow_pickle=True)
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
 interpreter = tf.lite.Interpreter(model_path=model_path)

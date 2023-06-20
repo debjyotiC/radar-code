@@ -3,7 +3,7 @@ import numpy as np
 
 
 type_of_quantization = "float16"
-saved_model_dir = "saved-model/range-doppler-model-umbc-new-3"
+saved_model_dir = "saved-model/umbc_indoor_cfar_denoised"
 BATCH_SIZE = 70
 
 range_doppler_features = np.load("data/npz_files/range_doppler_home_cfar_data.npz", allow_pickle=True)
@@ -45,5 +45,5 @@ elif type_of_quantization == "float16":
     tflite_model = converter.convert()
 
     # Save the model.
-    with open('saved-tflite-model/range-doppler-model-umbc-new-3-float16.tflite', 'wb') as f:
+    with open('saved-tflite-model/umbc_indoor_cfar_denoised_float16.tflite', 'wb') as f:
         f.write(tflite_model)
