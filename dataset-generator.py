@@ -4,7 +4,7 @@ import pywt
 from os import listdir
 from os.path import isdir, join
 
-dataset_path = 'data/csv_files/indoor/new_umbc'
+dataset_path = 'data/csv_files/umbc_new'
 
 # Config parameters for test
 # configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
